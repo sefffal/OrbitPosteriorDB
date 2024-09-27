@@ -5,6 +5,7 @@ InferenceReport = "e5554034-be14-491c-aa1c-9e5f4a9f7142"
 Octofitter = "daf3887e-d01a-44a1-9d7e-98f15c5d69c9"
 PairPlots = "43a3c2be-4208-490b-832a-a21dcd55d7da"
 Pigeons = "0eb8d820-af6a-4919-95ae-11206f830c31"
+PlanetOrbits = "fd6f9641-d78f-43ce-a379-ceb0bddb468a"
 
 [extras]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"

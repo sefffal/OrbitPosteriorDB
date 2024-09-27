@@ -51,24 +51,26 @@ gaia_id = 2940856402123426176
 hgca_like = HGCALikelihood(; gaia_id)
 
 ##
-mean_epoch = mean(astrom_like.table.epoch)
+
+mean_epoch = mean(astrom_like_1.table.epoch)
+# @planet b AbsoluteVisual{KepOrbit} begin
 @planet b Visual{KepOrbit} begin
     e ~ Uniform(0, 0.999)
     a ~ LogUniform(1, 1000)
     mass ~ LogUniform(1,500)
     i ~ Sine()
-    # Ω ~ UniformCircular()
-    # ω ~ UniformCircular()
-    # θ ~ UniformCircular()
-    Ω ~ Uniform(0, 2pi)
-    ω ~ Uniform(0, 2pi)
-    θ ~ Uniform(0, 2pi)
+    Ω ~ Uniform(0,2pi)
+    ω ~ Uniform(0,2pi)
+    θ ~ Uniform(0,2pi)
     tp = θ_at_epoch_to_tperi(system,b,$mean_epoch)
-end astrom_like
+end astrom_like_1
 
-@system GL229A begin
+
+@system GL229A_reparam begin
     M ~ truncated(Normal(0.579, 0.1), lower=0) # (Baines & Armstrong 2011).
     plx ~ gaia_plx(; gaia_id)
+    
+  
     jitter ~ Product([
         truncated(Normal(0, 10), lower=0),
         truncated(Normal(0, 10), lower=0),
@@ -76,43 +78,22 @@ end astrom_like
         truncated(Normal(0, 10), lower=0),
         truncated(Normal(0, 10), lower=0),
     ])
-    rv0 ~ MvNormal(fill(1500, 5))
+    # rv0 ~ MvNormal(fill(1500, 5))
+    rv0_net ~ Normal(0,1500)
+    rv0_each ~ MvNormal(fill(10, 5))
+    rv0 = system.rv0_each .+ system.rv0_net
+
+
     pmra ~ Normal(-136.42, 1000)
     pmdec ~ Normal(-715.02, 1000)
 end rv_like hgca_like b
+model = Octofitter.LogDensityModel(GL229A_reparam; autodiff=:ForwardDiff, verbosity=4)
 
-model = Octofitter.LogDensityModel(GL229A; autodiff=:ForwardDiff, verbosity=4)
 
 ## Initialize it near the mode.
 # The posterior appears multi-modal at first, but this period range dominates.
-model.starting_points= fill(model.link([
-    0.6666921097218382
-    173.5954322176413
-      5.460089174960165
-      2.9396971616582293
-      3.053929939180548
-      1.8958506333312857
-      4.802605001566408
-    189.09099932852274
-    197.32536572923578
-    195.32333134355542
-    198.16288501676306
-    199.29659687079726
-   -145.1899530896007
-   -706.0811075841312
-      0.7371378360662447
-     40.99933962474703
-     71.52220819748763
-      0.8210639011591009
-    #  -0.9099306940000274
-    #   0.1891153547867482
-    #  -0.6992656365254634
-    #   0.699666397551208
-    #  -0.9762798298963133
-    #   0.21651257177731173
-    rem2pi(atan( 0.1891153547867482, -0.909930694000027),RoundDown)
-    rem2pi(atan(0.699666397551208, -0.6992656365254634),RoundDown)
-    rem2pi(atan(0.21651257177731173, -0.9762798298963133),RoundDown)
+model.starting_points= fill(model.link(
+    [-0.4379843968818915, 5.156604091211061, 1.50584325204466, 2.0603093493895033, 1.2023862122831677, 0.959120843046445, 1.506903885206572, 2.381052701959341, -8.069099332206761, 2.294895076733609  …  1.1771693368026892, -145.47959330263868, -705.7990060941062, 1.7681218961823513, -3.406339274322457, -1.8064415810545709, -4.495184238907693, -0.21382190876833038, -0.20192496540804014, -0.13923518661202688
 ]), 100)
 model.ℓπcallback(model.starting_points[1])
 
