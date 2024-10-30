@@ -26,6 +26,15 @@ astrom_like_1 = PlanetRelAstromLikelihood(Table(;
     pa=deg2rad.([163.224, 163.456, 163.595, 164.796, 165.244, 165.469, 171.2, 179.564, 179.735]),
     σ_pa=deg2rad.([0.015, 0.019, 0.015, 0.015, 0.016, 0.016, 0.1, 0.024, 0.024]),
 ))
+
+
+astrom_like_2 = PlanetRelAstromLikelihood(Table(;
+    epoch=mjd.(["2024-10-24"]),
+    ra=[-302.41345030000105],
+    dec=[-4294.98910568],
+    σ_ra=[30],
+    σ_dec=[30],
+))
 ##
 @planet b Visual{KepOrbit} begin
     e ~ Uniform(0.7, 0.999)
