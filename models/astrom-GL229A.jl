@@ -54,7 +54,7 @@ end astrom_like_1 astrom_like_2
     M = system.M_pri + system.M_sec*Octofitter.mjup2msol
     # M ~ truncated(Normal(0.579, 0.1), lower=0.4, upper=0.7) # (Baines & Armstrong 2011).
     # M ~ Uniform(0.2, 2) # (Baines & Armstrong 2011).
-    plx ~ gaia_plx(; gaia_id)
+    plx ~ truncated(Normal(173.57398986816406,0.01704956591129303), lower=0.0)
     
 end b
 model = Octofitter.LogDensityModel(GL229A; autodiff=:ForwardDiff, verbosity=4)
@@ -71,10 +71,11 @@ chain_pt,pt = octofit_pigeons(
     model,
     # 12 rounds is about the same wall-clock time as the above HMC
     n_rounds=12,
-    n_chains=22,
-    n_chains_variational=14,
-    variational=GaussianReference(),
-    explorer=Compose(SliceSampler(),AutoMALA()),
+    n_chains=1,
+    n_chains_variational=0,
+    variational=nothing,#GaussianReference(),
+    # explorer=Compose(SliceSampler(),AutoMALA()),
+    explorer=AutoMALA(),
 )
 ##
 octocorner(
