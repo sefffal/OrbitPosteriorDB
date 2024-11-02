@@ -80,9 +80,10 @@ chain_pt,pt = octofit_pigeons(
 )
 ##
 octocorner(
-    model,
+    model2,
     chain_hmc,
     chain_pt;
     includecols=(:iter,:logpost),
     viz=(PairPlots.Scatter(markersize=2),)
 )
+##
