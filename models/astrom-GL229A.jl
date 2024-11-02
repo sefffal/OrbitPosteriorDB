@@ -41,8 +41,10 @@ astrom_like_2 = PlanetRelAstromLikelihood(Table(;
     a ~ LogUniform(1, 500)
     mass = system.M_sec
     i ~ Sine()
-    Ω ~ UniformCircular()
-    ω ~ UniformCircular()
+    ω_p_Ω ~ UniformCircular()
+    ω_m_Ω ~ UniformCircular()
+    Ω = (b.ω_p_Ω - b.ω_m_Ω)/2
+    ω = (b.ω_p_Ω + b.ω_m_Ω)/2
     θ ~ UniformCircular()
     tp = θ_at_epoch_to_tperi(system,b,50000.0) # epoch of bunch of astrom measurements 1996
 end astrom_like_1 astrom_like_2
@@ -57,25 +59,24 @@ end astrom_like_1 astrom_like_2
     plx ~ truncated(Normal(173.57398986816406,0.01704956591129303), lower=0.0)
     
 end b
-model = Octofitter.LogDensityModel(GL229A; autodiff=:ForwardDiff, verbosity=4)
+model2 = Octofitter.LogDensityModel(GL229A; autodiff=:ForwardDiff, verbosity=4)
 
 ##
 using Random
 Random.seed!(0)
-Octofitter.default_initializer!(model,verbosity=4)
-
-##
-chain_hmc = octofit(model,verbosity=4,adaptation=1000,iterations=4100)
+Octofitter.default_initializer!(model2,nruns=1,verbosity=4) # nruns must = 1 or becomes non-deterministic
+# Must use Random.seed! and not pass an rng; passing rng to AdvancedHMC is broken.
+chain_hmc = octofit(model2,verbosity=4,adaptation=10,iterations=41)
 ##
 chain_pt,pt = octofit_pigeons(
-    model,
+    model2,
     # 12 rounds is about the same wall-clock time as the above HMC
-    n_rounds=12,
+    n_rounds=8,
     n_chains=1,
     n_chains_variational=0,
     variational=nothing,#GaussianReference(),
     # explorer=Compose(SliceSampler(),AutoMALA()),
-    explorer=AutoMALA(),
+    explorer=AutoMALA(step_size=0.0004),
 )
 ##
 octocorner(
