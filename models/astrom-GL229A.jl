@@ -66,7 +66,7 @@ using Random
 Random.seed!(0)
 Octofitter.default_initializer!(model2,nruns=1,verbosity=4) # nruns must = 1 or becomes non-deterministic
 # Must use Random.seed! and not pass an rng; passing rng to AdvancedHMC is broken.
-chain_hmc = octofit(model2,verbosity=4,adaptation=10,iterations=41)
+chain_hmc = octofit(model2,verbosity=4,adaptation=1000,iterations=4100)
 ##
 chain_pt,pt = octofit_pigeons(
     model2,
